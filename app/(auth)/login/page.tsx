@@ -31,13 +31,14 @@ export default function LoginPage() {
         email,
         password,
         options: {
-          emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/dashboard`,
+          emailRedirectTo:
+            process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/dashboard/dashboard`,
         },
       })
 
       if (signInError) throw signInError
 
-      router.push("/dashboard")
+      router.push("/dashboard/dashboard")
       router.refresh()
     } catch (err: any) {
       setError(err.message || "Erro ao fazer login")

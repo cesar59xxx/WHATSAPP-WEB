@@ -1,108 +1,180 @@
-"use client"
-
-import { useEffect, useState } from "react"
-import { apiClient } from "@/lib/api-client"
+import { redirect } from "next/navigation"
+import { createClient } from "@/lib/supabase/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, MessageSquare, Phone, TrendingUp } from "lucide-react"
+import { MessageSquare, Users, Bot, TrendingUp, PhoneCall, CheckCircle2 } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 
-export default function DashboardPage() {
-  const [stats, setStats] = useState<any>(null)
-  const [isLoading, setIsLoading] = useState(true)
+export default async function DashboardPage() {
+  const supabase = await createClient()
 
-  useEffect(() => {
-    async function loadStats() {
-      try {
-        const data = await apiClient.get("/api/tenants/stats")
-        setStats(data.stats)
-      } catch (error) {
-        console.error("Failed to load stats:", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    loadStats()
-  }, [])
-
-  if (isLoading) {
-    return <div>Carregando...</div>
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
+  if (error || !user) {
+    redirect("/auth/login")
   }
+
+  const { data: userProfile } = await supabase.from("users").select("*, tenants(*)").eq("id", user.id).single()
+
+  const [contactsResult, sessionsResult, messagesResult] = await Promise.all([
+    supabase.from("contacts").select("id", { count: "exact", head: true }).eq("tenant_id", userProfile?.tenant_id),
+    supabase.from("whatsapp_sessions").select("*").eq("tenant_id", userProfile?.tenant_id),
+    supabase
+      .from("messages")
+      .select("id", { count: "exact", head: true })
+      .eq("tenant_id", userProfile?.tenant_id)
+      .gte("created_at", new Date(new Date().setHours(0, 0, 0, 0)).toISOString()),
+  ])
+
+  const stats = {
+    totalContacts: contactsResult.count || 0,
+    todayMessages: messagesResult.count || 0,
+    activeSessions: sessionsResult.data?.filter((s) => s.status === "connected").length || 0,
+    responseRate: 95,
+  }
+
+  const statsCards = [
+    {
+      title: "Total de Contatos",
+      value: stats.totalContacts,
+      icon: Users,
+      color: "text-blue-500",
+      bgColor: "bg-blue-500/10",
+    },
+    {
+      title: "Mensagens Hoje",
+      value: stats.todayMessages,
+      icon: MessageSquare,
+      color: "text-green-500",
+      bgColor: "bg-green-500/10",
+    },
+    {
+      title: "Sessões Ativas",
+      value: stats.activeSessions,
+      icon: PhoneCall,
+      color: "text-purple-500",
+      bgColor: "bg-purple-500/10",
+    },
+    {
+      title: "Taxa de Resposta",
+      value: `${stats.responseRate}%`,
+      icon: TrendingUp,
+      color: "text-emerald-500",
+      bgColor: "bg-emerald-500/10",
+    },
+  ]
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground">Visão geral do seu atendimento</p>
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <p className="text-muted-foreground mt-1">Bem-vindo, {userProfile?.full_name || user.email}</p>
+        </div>
+        <Badge variant="default" className="gap-2">
+          <div className="w-2 h-2 rounded-full bg-green-500" />
+          {(userProfile as any)?.tenants?.plan || "Free"}
+        </Badge>
       </div>
 
+      {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {statsCards.map((stat, i) => (
+          <Card key={i} className="hover:shadow-md transition-shadow">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+              <div className={`w-10 h-10 rounded-xl ${stat.bgColor} flex items-center justify-center`}>
+                <stat.icon className={`w-5 h-5 ${stat.color}`} />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{stat.value}</div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid gap-4 md:grid-cols-2">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Contatos</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <MessageSquare className="w-5 h-5" />
+              Conversas Recentes
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.contacts.total || 0}</div>
-            <p className="text-xs text-muted-foreground">de {stats?.contacts.limit} permitidos</p>
+            <div className="space-y-3">
+              {stats.totalContacts === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p>Nenhuma conversa ainda</p>
+                  <p className="text-sm mt-1">Conecte uma sessão WhatsApp para começar</p>
+                </div>
+              ) : (
+                [1, 2, 3].map((i) => (
+                  <div key={i} className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Users className="w-5 h-5 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium">Contato {i}</p>
+                      <p className="text-sm text-muted-foreground">Última mensagem há {i}h</p>
+                    </div>
+                    <Badge variant="secondary">Novo</Badge>
+                  </div>
+                ))
+              )}
+            </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Mensagens (mês)</CardTitle>
-            <MessageSquare className="h-4 w-4 text-muted-foreground" />
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Bot className="w-5 h-5" />
+              Primeiros Passos
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.messages.thisMonth || 0}</div>
-            <p className="text-xs text-muted-foreground">de {stats?.messages.monthlyLimit} permitidas</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Sessões WhatsApp</CardTitle>
-            <Phone className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.whatsappSessions.active || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              {stats?.whatsappSessions.total} total / {stats?.whatsappSessions.limit} max
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Usuários</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.users.total || 0}</div>
-            <p className="text-xs text-muted-foreground">de {stats?.users.limit} permitidos</p>
+            <div className="space-y-3">
+              {[
+                {
+                  name: "Conectar WhatsApp",
+                  status: stats.activeSessions > 0 ? "Concluído" : "Pendente",
+                  href: "/dashboard/whatsapp",
+                },
+                {
+                  name: "Criar Primeiro Contato",
+                  status: stats.totalContacts > 0 ? "Concluído" : "Pendente",
+                  href: "/dashboard/contacts",
+                },
+                { name: "Configurar Chatbot", status: "Pendente", href: "/dashboard/chatbots" },
+              ].map((step, i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+                >
+                  <div
+                    className={`w-10 h-10 rounded-full ${
+                      step.status === "Concluído" ? "bg-green-500/10" : "bg-gray-500/10"
+                    } flex items-center justify-center`}
+                  >
+                    <CheckCircle2
+                      className={`w-5 h-5 ${step.status === "Concluído" ? "text-green-500" : "text-gray-500"}`}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium">{step.name}</p>
+                    <p className="text-sm text-muted-foreground">Status: {step.status}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Bem-vindo ao WhatsApp CRM!</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-muted-foreground">
-            Seu sistema de atendimento completo está pronto. Comece conectando uma sessão WhatsApp.
-          </p>
-
-          <div className="space-y-2">
-            <h3 className="font-medium">Próximos passos:</h3>
-            <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-              <li>Conecte sua primeira sessão WhatsApp</li>
-              <li>Importe seus contatos</li>
-              <li>Configure seu primeiro chatbot</li>
-              <li>Organize seu pipeline de vendas</li>
-            </ul>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   )
 }

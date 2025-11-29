@@ -11,13 +11,13 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { MessageSquare, Users, Phone, Bot, Settings, LogOut, Menu, X, BarChart3, Tag } from "lucide-react"
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: BarChart3 },
-  { name: "Inbox", href: "/inbox", icon: MessageSquare },
-  { name: "Contatos", href: "/contacts", icon: Users },
-  { name: "Pipeline", href: "/pipeline", icon: Tag },
-  { name: "WhatsApp", href: "/whatsapp", icon: Phone },
-  { name: "Chatbots", href: "/chatbots", icon: Bot },
-  { name: "Configurações", href: "/settings", icon: Settings },
+  { name: "Dashboard", href: "/dashboard/dashboard", icon: BarChart3 },
+  { name: "Inbox", href: "/dashboard/inbox", icon: MessageSquare },
+  { name: "Contatos", href: "/dashboard/contacts", icon: Users },
+  { name: "Pipeline", href: "/dashboard/pipeline", icon: Tag },
+  { name: "WhatsApp", href: "/dashboard/whatsapp", icon: Phone },
+  { name: "Chatbots", href: "/dashboard/chatbots", icon: Bot },
+  { name: "Configurações", href: "/dashboard/settings", icon: Settings },
 ]
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

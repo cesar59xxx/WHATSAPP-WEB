@@ -21,10 +21,10 @@ export default function LandingPage() {
             <Link href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Preços
             </Link>
-            <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <Link href="/auth/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Entrar
             </Link>
-            <Link href="/register">
+            <Link href="/auth/sign-up">
               <Button size="sm">Começar Grátis</Button>
             </Link>
           </nav>
@@ -46,12 +46,12 @@ export default function LandingPage() {
             vendas com a plataforma omnichannel definitiva.
           </p>
           <div className="flex items-center justify-center gap-4">
-            <Link href="/register">
+            <Link href="/auth/sign-up">
               <Button size="lg" className="text-base">
                 Começar Agora - Grátis
               </Button>
             </Link>
-            <Link href="/login">
+            <Link href="/auth/login">
               <Button size="lg" variant="outline" className="text-base bg-transparent">
                 Já tenho conta
               </Button>
@@ -122,7 +122,7 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto bg-primary text-primary-foreground rounded-3xl p-12 text-center space-y-6">
           <h2 className="text-4xl font-bold">Pronto para começar?</h2>
           <p className="text-xl opacity-90">Junte-se a centenas de empresas que já automatizaram seu atendimento</p>
-          <Link href="/register">
+          <Link href="/auth/sign-up">
             <Button size="lg" variant="secondary" className="text-base">
               Criar Conta Grátis
             </Button>
