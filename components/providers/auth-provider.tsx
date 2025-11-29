@@ -17,18 +17,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     fetchUser()
   }, [fetchUser])
 
-  useEffect(() => {
-    if (!isLoading) {
-      const isPublicRoute = publicRoutes.includes(pathname)
-
-      if (!isAuthenticated && !isPublicRoute) {
-        router.push("/login")
-      } else if (isAuthenticated && isPublicRoute) {
-        router.push("/dashboard")
-      }
-    }
-  }, [isAuthenticated, isLoading, pathname, router])
-
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
