@@ -1,353 +1,281 @@
 # 🚀 SaaS CRM + Chatbot Omnichannel para WhatsApp
 
-Sistema completo de **CRM e Chatbot** para gerenciar atendimento via WhatsApp, construído com **whatsapp-web.js** (sem APIs oficiais do Meta).
+Sistema completo de CRM com chatbot para gerenciamento de conversas WhatsApp, construído com Next.js 16, React 19, Supabase e Tailwind CSS.
+
+## ✅ STATUS: PRONTO PARA TESTAR NA VERCEL!
+
+O sistema está configurado com Supabase e pode ser testado imediatamente aqui no v0 ou fazer deploy na Vercel.
 
 ---
 
-## ✨ Funcionalidades Principais
+## ✨ Funcionalidades
 
-### 📱 WhatsApp Engine
-- ✅ Múltiplas sessões simultâneas (multi-tenant)
-- ✅ Autenticação via QR Code
-- ✅ Reconexão automática
-- ✅ Detecção de desconexão
-- ✅ Envio/recebimento de texto, imagens, áudios e documentos
-- ✅ Persistência de sessões no disco
-- ✅ Load balancing de sessões
+### ✅ Funcionando Agora
+- 🔐 **Autenticação Completa** - Sistema multi-tenant com Supabase Auth
+- 👥 **CRM Completo** - Gestão de contatos com tags e notas
+- 🔄 **Pipeline Kanban** - Funil de vendas visual (new → won/lost)
+- 💬 **Inbox Profissional** - Interface estilo Zendesk/Intercom
+- 🤖 **Editor de Chatbot** - Fluxos de automação visual
+- 📊 **Dashboard Analítico** - Estatísticas em tempo real
+- 🎨 **Tema Claro/Escuro** - Totalmente responsivo
+- 🔒 **RLS Habilitado** - Segurança por Row Level Security
 
-### 💬 Inbox (Chat em Tempo Real)
-- ✅ Interface estilo Zendesk/Intercom
-- ✅ WebSocket para mensagens instantâneas
-- ✅ Histórico completo de conversas
-- ✅ Upload de mídia
-- ✅ Informações do contato
-- ✅ Status de leitura e envio
+### 🚧 Para Adicionar Depois
+- WhatsApp Web real com whatsapp-web.js (requer backend Node.js separado)
+- WebSocket para mensagens em tempo real
+- Sistema de pagamentos/billing
+- Notificações push
 
-### 🎯 CRM Completo
-- ✅ Cadastro de contatos automático
-- ✅ Tags personalizáveis
-- ✅ Pipeline Kanban com etapas
-- ✅ Observações e histórico
-- ✅ Última interação
-- ✅ Importação/exportação CSV
-- ✅ Filtros e busca avançada
+---
 
-### 🤖 Sistema de Chatbot
-- ✅ Criador visual de fluxos (drag-and-drop)
-- ✅ Gatilhos por palavra-chave
-- ✅ Condições (if/else)
-- ✅ Respostas automáticas
-- ✅ Variáveis dinâmicas (nome, email, etc)
-- ✅ Agendamento de mensagens
-- ✅ API interna para integração
+## 🎯 Testar Agora (3 Passos)
 
-### 👥 Multi-tenant (SaaS)
-- ✅ Contas isoladas por cliente
-- ✅ Planos (Free, Pro, Enterprise)
-- ✅ Limites por plano
-- ✅ Painel administrativo master
-- ✅ Gestão de usuários e permissões
-- ✅ Sistema de billing simulado
+### 1. Visualizar Preview
+Clique no botão **"Open Preview"** no canto superior direito para ver o projeto rodando!
 
-### 🔐 Segurança
-- ✅ Autenticação JWT
-- ✅ Refresh tokens
-- ✅ Rate limiting
-- ✅ Helmet.js (proteção HTTP)
-- ✅ CORS configurável
-- ✅ Senhas criptografadas (bcrypt)
+### 2. Criar Conta
+1. Na página inicial, clique em **"Sign Up"**
+2. Preencha:
+   - Nome completo
+   - Nome da empresa
+   - Email
+   - Senha (mín. 6 caracteres)
+3. **IMPORTANTE**: Confirme seu email no link enviado pelo Supabase
+
+### 3. Explorar o Sistema
+Após fazer login, você terá acesso a:
+- 📊 Dashboard com estatísticas
+- 💬 Inbox de mensagens
+- 👥 CRM de contatos
+- 🔄 Pipeline Kanban
+- 🤖 Editor de chatbot
+- ⚙️ Configurações
 
 ---
 
 ## 🏗️ Arquitetura
 
-### Stack Tecnológica
+\`\`\`
+├── app/
+│   ├── (auth)/          # Autenticação (login/sign-up)
+│   ├── (dashboard)/     # Área protegida do app
+│   │   ├── inbox/       # Chat em tempo real
+│   │   ├── contacts/    # CRM
+│   │   ├── pipeline/    # Funil Kanban
+│   │   ├── chatbots/    # Automações
+│   │   ├── whatsapp/    # Sessões WhatsApp
+│   │   └── settings/    # Configurações
+│   ├── (admin)/         # Painel SuperAdmin
+│   └── api/             # API Routes Next.js
+├── components/
+│   ├── ui/              # shadcn/ui components
+│   └── providers/       # Context providers
+├── lib/
+│   ├── supabase/        # Cliente Supabase
+│   └── types/           # TypeScript types
+├── scripts/             # SQL migrations
+└── server/              # Backend Express (para WhatsApp real)
+\`\`\`
 
-**Backend:**
-- Node.js 18+ com Express 5
-- MongoDB (banco de dados)
-- Redis (cache e filas)
-- Socket.IO (WebSocket)
-- Bull (filas de processamento)
-- whatsapp-web.js 1.34.2
+---
+
+## 🗄️ Banco de Dados Supabase
+
+### Tabelas Criadas
+- `tenants` - Clientes do SaaS (multi-tenant)
+- `users` - Usuários/agentes
+- `contacts` - Contatos do CRM
+- `messages` - Histórico de mensagens
+- `whatsapp_sessions` - Conexões WhatsApp
+- `chatbot_flows` - Fluxos de automação
+- `chatbot_logs` - Logs de execução
+
+### Segurança
+- ✅ Row Level Security (RLS) habilitado
+- ✅ Políticas de acesso por tenant
+- ✅ Triggers automáticos para signup
+- ✅ Índices otimizados
+
+---
+
+## 🚀 Deploy
+
+### Opção 1: Deploy Rápido (Recomendado)
+1. Clique em **"Publish"** no v0
+2. Escolha um nome para o projeto
+3. Deploy automático para Vercel
+4. Seu app estará em `seu-projeto.vercel.app`
+
+### Opção 2: Via GitHub
+1. Conecte ao GitHub pela sidebar
+2. Faça commit do código
+3. Acesse [vercel.com/new](https://vercel.com/new)
+4. Importe o repositório
+5. Deploy automático
+
+### Variáveis de Ambiente
+Já configuradas automaticamente pela integração Supabase:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+
+---
+
+## 💻 Desenvolvimento Local
+
+\`\`\`bash
+# Instalar dependências
+npm install
+
+# Rodar em desenvolvimento
+npm run dev
+
+# Build para produção
+npm run build
+
+# Iniciar produção
+npm start
+\`\`\`
+
+Acesse: `http://localhost:3000`
+
+---
+
+## 📱 WhatsApp Real (Backend Separado)
+
+Para conectar WhatsApp real com whatsapp-web.js:
+
+### Por Que Precisa de Backend Separado?
+- `whatsapp-web.js` usa Puppeteer (Chrome headless)
+- Não funciona em ambientes serverless/navegador
+- Precisa de servidor com estado persistente
+
+### Como Implementar?
+Os arquivos do backend já estão na pasta `/server/`:
+
+**Arquitetura Recomendada:**
+\`\`\`
+Frontend (Vercel)          Backend (VPS/Railway)
+    ↓                              ↓
+  Next.js  ←── REST API ────→  Express.js
+  Supabase                    whatsapp-web.js
+                              Puppeteer
+                              MongoDB
+                              Redis
+\`\`\`
+
+**Passos:**
+1. Deploy backend em VPS, Railway ou Render
+2. Configure MongoDB e Redis
+3. Inicie whatsapp-web.js
+4. Conecte frontend via variável `NEXT_PUBLIC_BACKEND_URL`
+
+---
+
+## 🎨 Customização
+
+### Alterar Cores do Tema
+Edite `app/globals.css`:
+\`\`\`css
+--primary: ...
+--background: ...
+--foreground: ...
+\`\`\`
+
+### Adicionar Logo
+1. Coloque em `public/logo.png`
+2. Atualize em `app/page.tsx`
+
+### Modificar Planos
+Edite limites em `scripts/001_create_tenants_and_users.sql`
+
+---
+
+## 📚 Stack Tecnológica
 
 **Frontend:**
 - Next.js 16 (App Router)
-- React 19
-- TypeScript
-- Tailwind CSS 4
-- Shadcn/ui
-- Zustand (state)
-- React Flow (editor visual)
+- React 19.2 (Server Components)
+- TypeScript 5
+- Tailwind CSS v4
+- shadcn/ui + Radix UI
 
-**Infraestrutura:**
-- Docker (containerização)
-- Puppeteer (automação browser)
+**Backend:**
+- Supabase (PostgreSQL + Auth)
+- API Routes Next.js
+- Server Actions
 
-### Estrutura de Pastas
+**UI/UX:**
+- React Hook Form + Zod
+- Zustand (state management)
+- Lucide React (icons)
+- Recharts (gráficos)
+- next-themes (tema)
 
+**Deploy:**
+- Vercel (frontend)
+- Supabase (database)
+
+---
+
+## 📖 Documentação
+
+- **[TESTE_AGORA.md](./TESTE_AGORA.md)** - Como testar o sistema agora
+- **[DEPLOY_VERCEL.md](./DEPLOY_VERCEL.md)** - Guia completo de deploy
+- **[GUIA_DE_USO.md](./GUIA_DE_USO.md)** - Como usar cada funcionalidade
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Arquitetura técnica detalhada
+- **[TROUBLESHOOTING.md](./TROUBLESHOOTING.md)** - Solução de problemas
+
+---
+
+## 🔌 API Routes (Next.js)
+
+### Endpoints Disponíveis
+
+**Usuário:**
 \`\`\`
-saas-crm-whatsapp/
-├── server/                    # Backend Express
-│   ├── config/               # Configurações (DB, Redis)
-│   ├── controllers/          # Controladores da API
-│   ├── middleware/           # Auth, error handling
-│   ├── models/              # Schemas MongoDB
-│   ├── queues/              # Filas Bull/Redis
-│   ├── routes/              # Rotas da API
-│   ├── services/            # Lógica de negócio
-│   ├── socket/              # Handlers WebSocket
-│   ├── workers/             # Processadores de fila
-│   └── index.js             # Entry point backend
-├── app/                      # Frontend Next.js
-│   ├── (auth)/              # Páginas de autenticação
-│   ├── (dashboard)/         # Páginas do dashboard
-│   ├── (admin)/             # Painel administrativo
-│   ├── layout.tsx           # Layout raiz
-│   └── page.tsx             # Landing page
-├── components/              # Componentes React
-│   ├── providers/          # Context providers
-│   └── ui/                 # Componentes shadcn/ui
-├── lib/                    # Utilitários e helpers
-│   ├── api-client.ts       # Cliente HTTP
-│   └── stores/             # Zustand stores
-├── scripts/                # Scripts auxiliares
-├── public/                 # Arquivos estáticos
-└── .wwebjs_auth/          # Sessões WhatsApp (auto-criado)
+GET    /api/user                  # Dados do usuário logado
+PUT    /api/user                  # Atualizar perfil
+\`\`\`
+
+**Contatos:**
+\`\`\`
+GET    /api/contacts              # Listar contatos
+POST   /api/contacts              # Criar contato
+GET    /api/contacts/[id]         # Detalhes
+PUT    /api/contacts/[id]         # Atualizar
+DELETE /api/contacts/[id]         # Deletar
+\`\`\`
+
+**Sessões WhatsApp (Mock):**
+\`\`\`
+GET    /api/whatsapp/sessions     # Listar sessões
+POST   /api/whatsapp/sessions     # Criar sessão
+DELETE /api/whatsapp/sessions/[id] # Desconectar
 \`\`\`
 
 ---
 
-## 🚀 Instalação e Uso
+## 🆘 Troubleshooting
 
-### ⚡ Início Rápido (5 minutos)
+### Não consigo fazer login
+- Confirmou o email do Supabase?
+- Senha tem pelo menos 6 caracteres?
+- Tente limpar cache e cookies
 
-Siga o **[INICIO_RAPIDO.md](./INICIO_RAPIDO.md)** para rodar o sistema rapidamente.
+### Dashboard está vazio
+- Normal em nova conta
+- Crie contatos para ver dados
+- Estatísticas aparecem conforme você usa
 
-### 📋 Instalação Completa
+### Erro ao criar conta
+- Email já está em uso?
+- Verifique conexão com internet
+- Tente outro navegador
 
-#### 1. Pré-requisitos
-
-\`\`\`bash
-# Node.js 18+
-node --version
-
-# MongoDB (local ou Atlas)
-mongod --version
-
-# Redis (local ou Docker)
-redis-cli --version
-\`\`\`
-
-#### 2. Clone e Instale
-
-\`\`\`bash
-# Clone o repositório
-git clone <seu-repo>
-cd saas-crm-whatsapp
-
-# Instale dependências
-npm install
-
-# Configure o ambiente
-npm run setup
-\`\`\`
-
-#### 3. Configure .env
-
-\`\`\`env
-# Banco de Dados
-MONGODB_URI=mongodb://localhost:27017/whatsapp-crm-saas
-
-# Redis
-REDIS_HOST=localhost
-REDIS_PORT=6379
-REDIS_PASSWORD=
-
-# JWT
-JWT_SECRET=sua-chave-secreta-aqui
-JWT_REFRESH_SECRET=sua-chave-refresh-aqui
-JWT_EXPIRES_IN=24h
-JWT_REFRESH_EXPIRES_IN=7d
-
-# URLs
-FRONTEND_URL=http://localhost:3000
-BACKEND_URL=http://localhost:3001
-PORT=3001
-
-# Outros
-NODE_ENV=development
-RATE_LIMIT_WINDOW_MS=900000
-RATE_LIMIT_MAX_REQUESTS=100
-\`\`\`
-
-#### 4. Inicie os Serviços
-
-\`\`\`bash
-# Opção 1: Tudo junto (recomendado para dev)
-npm run dev
-
-# Opção 2: Separado
-npm run dev:backend    # Terminal 1 - Backend (porta 3001)
-npm run dev:frontend   # Terminal 2 - Frontend (porta 3000)
-npm run dev:worker     # Terminal 3 - Worker de filas (opcional)
-\`\`\`
-
-#### 5. Acesse o Sistema
-
-- **Frontend:** http://localhost:3000
-- **Backend:** http://localhost:3001/api/health
-- **Admin:** http://localhost:3000/admin
-
----
-
-## 📖 Documentação Completa
-
-- [**INICIO_RAPIDO.md**](./INICIO_RAPIDO.md) - Comece aqui!
-- [**ARCHITECTURE.md**](./ARCHITECTURE.md) - Arquitetura técnica detalhada
-- [**GUIA_DE_USO.md**](./GUIA_DE_USO.md) - Como usar cada funcionalidade
-- [**TROUBLESHOOTING.md**](./TROUBLESHOOTING.md) - Solução de problemas
-
----
-
-## 🔌 API REST
-
-### Endpoints Principais
-
-**Autenticação:**
-\`\`\`
-POST   /api/auth/register          # Registrar tenant
-POST   /api/auth/login             # Login
-POST   /api/auth/refresh           # Renovar token
-GET    /api/auth/me                # Dados do usuário
-\`\`\`
-
-**WhatsApp:**
-\`\`\`
-POST   /api/whatsapp/initialize    # Criar sessão
-GET    /api/whatsapp/qr/:sessionId # Obter QR Code
-GET    /api/whatsapp/status/:sessionId # Status da sessão
-POST   /api/whatsapp/send          # Enviar mensagem
-DELETE /api/whatsapp/:sessionId    # Desconectar
-\`\`\`
-
-**Contatos (CRM):**
-\`\`\`
-GET    /api/contacts               # Listar contatos
-POST   /api/contacts               # Criar contato
-GET    /api/contacts/:id           # Detalhes
-PUT    /api/contacts/:id           # Atualizar
-DELETE /api/contacts/:id           # Deletar
-\`\`\`
-
-**Mensagens:**
-\`\`\`
-GET    /api/messages               # Listar mensagens
-GET    /api/messages/contact/:contactId # Por contato
-POST   /api/messages               # Enviar (via API)
-\`\`\`
-
-**Chatbots:**
-\`\`\`
-GET    /api/chatbots               # Listar fluxos
-POST   /api/chatbots               # Criar fluxo
-PUT    /api/chatbots/:id           # Atualizar
-DELETE /api/chatbots/:id           # Deletar
-POST   /api/chatbots/:id/activate  # Ativar/desativar
-\`\`\`
-
-**Admin:**
-\`\`\`
-GET    /api/admin/tenants          # Listar tenants
-GET    /api/admin/sessions         # Sessões ativas
-GET    /api/admin/stats            # Estatísticas
-\`\`\`
-
----
-
-## 🔄 WebSocket Events
-
-### Cliente → Servidor
-\`\`\`javascript
-// Autenticar
-socket.emit('authenticate', { token: 'jwt-token' })
-
-// Enviar mensagem
-socket.emit('send-message', {
-  sessionId: 'session-id',
-  to: '5511999999999@c.us',
-  message: 'Olá!'
-})
-\`\`\`
-
-### Servidor → Cliente
-\`\`\`javascript
-// Mensagem recebida
-socket.on('new-message', (data) => {
-  console.log('Nova mensagem:', data)
-})
-
-// QR Code atualizado
-socket.on('qr-updated', (data) => {
-  console.log('QR Code:', data.qr)
-})
-
-// Sessão conectada
-socket.on('session-ready', (data) => {
-  console.log('Sessão pronta:', data.sessionId)
-})
-
-// Sessão desconectada
-socket.on('session-disconnected', (data) => {
-  console.log('Desconectada:', data.sessionId)
-})
-\`\`\`
-
----
-
-## 🐳 Deploy com Docker
-
-### Desenvolvimento
-\`\`\`bash
-docker-compose up -d
-\`\`\`
-
-### Produção
-\`\`\`dockerfile
-# Build
-docker build -t whatsapp-crm-saas .
-
-# Run
-docker run -d \
-  -p 3000:3000 \
-  -p 3001:3001 \
-  -e MONGODB_URI=mongodb://mongo:27017/whatsapp-crm \
-  -e REDIS_HOST=redis \
-  whatsapp-crm-saas
-\`\`\`
-
----
-
-## 🧪 Testes
-
-\`\`\`bash
-# Testar conexão MongoDB
-curl http://localhost:3001/api/health
-
-# Testar Redis
-redis-cli ping
-
-# Testar autenticação
-curl -X POST http://localhost:3001/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "companyName": "Teste SA",
-    "name": "João",
-    "email": "joao@teste.com",
-    "password": "123456",
-    "plan": "free"
-  }'
-\`\`\`
+### Preview não abre
+- Clique no botão "Open Preview" no v0
+- Se não funcionar, faça deploy na Vercel
 
 ---
 
@@ -355,33 +283,26 @@ curl -X POST http://localhost:3001/api/auth/register \
 
 1. Fork o projeto
 2. Crie uma branch (`git checkout -b feature/nova-feature`)
-3. Commit suas mudanças (`git commit -m 'Add: nova feature'`)
-4. Push para a branch (`git push origin feature/nova-feature`)
+3. Commit suas mudanças
+4. Push para a branch
 5. Abra um Pull Request
 
 ---
 
-## 📝 Licença
+## 📄 Licença
 
-Este projeto é open-source e está sob a licença MIT.
-
----
-
-## 🆘 Suporte
-
-- Issues: [GitHub Issues](#)
-- Documentação: [Arquivos .md neste repo]
-- WhatsApp Web.js: https://wwebjs.dev/
+Este projeto é open-source para fins de demonstração.
 
 ---
 
-## 🙏 Agradecimentos
+## 🙏 Créditos
 
-- [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) - Biblioteca incrível
-- [shadcn/ui](https://ui.shadcn.com/) - Componentes lindos
-- [Next.js](https://nextjs.org/) - Framework React perfeito
-- Comunidade open-source
+- [Supabase](https://supabase.com/) - Backend as a Service
+- [Vercel](https://vercel.com/) - Hospedagem e v0
+- [shadcn/ui](https://ui.shadcn.com/) - Componentes UI
+- [Next.js](https://nextjs.org/) - Framework React
+- [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) - WhatsApp API
 
 ---
 
-**Desenvolvido com cuidado para facilitar o atendimento via WhatsApp**
+**Desenvolvido com ❤️ usando v0 by Vercel**
