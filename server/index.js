@@ -6,7 +6,7 @@ import helmet from "helmet"
 import compression from "compression"
 import rateLimit from "express-rate-limit"
 import dotenv from "dotenv"
-import mongoose from "mongoose"
+import { supabase } from "./config/supabase.js"
 import authRoutes from "./routes/auth.routes.js"
 import tenantRoutes from "./routes/tenant.routes.js"
 import whatsappRoutes from "./routes/whatsapp.routes.js"
@@ -60,12 +60,22 @@ app.use("/api/chatbots", chatbotRoutes)
 app.use("/api/admin", adminRoutes)
 
 // Health check
-app.get("/api/health", (req, res) => {
-  res.json({
-    status: "ok",
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-  })
+app.get("/api/health", async (req, res) => {
+  try {
+    const { data, error } = await supabase.from("tenants").select("count").limit(1).single()
+
+    res.json({
+      status: "ok",
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      database: error ? "error" : "connected",
+    })
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      message: err.message,
+    })
+  }
 })
 
 // Setup Socket.IO
@@ -74,24 +84,14 @@ setupSocketIO(io)
 // Error handler deve ser o último middleware
 app.use(errorHandler)
 
-// Conectar ao MongoDB
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log("✅ MongoDB conectado com sucesso")
-  })
-  .catch((err) => {
-    console.error("❌ Erro ao conectar MongoDB:", err)
-    process.exit(1)
-  })
-
 // Iniciar servidor
 const PORT = process.env.PORT || 3001
 httpServer.listen(PORT, () => {
   console.log(`
 🚀 Servidor rodando na porta ${PORT}
 📱 WhatsApp CRM SaaS iniciado
-🌍 Ambiente: ${process.env.NODE_ENV}
+🌍 Ambiente: ${process.env.NODE_ENV || "development"}
+💾 Database: Supabase
   `)
 })
 
@@ -106,4 +106,4 @@ process.on("uncaughtException", (err) => {
   process.exit(1)
 })
 
-export { io }
+export { io, supabase }
