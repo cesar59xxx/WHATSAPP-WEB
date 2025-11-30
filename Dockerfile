@@ -9,7 +9,6 @@ RUN apk add --no-cache \
     nss \
     freetype \
     harfbuzz \
-    ca-certificates-utils \
     && rm -rf /var/cache/apk/*
 
 WORKDIR /app
