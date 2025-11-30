@@ -1,4 +1,5 @@
-import { Client, LocalAuth } from "whatsapp-web.js"
+import pkg from "whatsapp-web.js"
+const { Client, LocalAuth, MessageMedia } = pkg
 import qrcode from "qrcode"
 import { WhatsAppSession } from "../models/whatsapp-session.model.js"
 import { Contact } from "../models/contact.model.js"
@@ -354,7 +355,6 @@ class WhatsAppManager {
       if (type === "text") {
         sentMessage = await client.sendMessage(to, content.text)
       } else if (type === "image" || type === "video" || type === "document") {
-        const { MessageMedia } = await import("whatsapp-web.js")
         const media = new MessageMedia(content.mimeType, content.mediaData, content.filename)
         sentMessage = await client.sendMessage(to, media, {
           caption: content.caption,
